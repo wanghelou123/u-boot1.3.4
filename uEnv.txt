@@ -1,0 +1,2 @@
+kernelImage=zImage
+rootfsImage=kl-h1100-rootfs-20150730-v2.2.0.img

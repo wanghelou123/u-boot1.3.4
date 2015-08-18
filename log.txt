@@ -1,0 +1,70 @@
+2015-07-17
+
+修改文件include/configs/smdk2416.h
+
+1、编译 u-boot-movi.bin 时，将#define  CONFIG_BOOT_NAND注释掉，保留#define CONFIG_BOOT_MOVINAND
+改为如下： 
+//#define CONFIG_BOOT_NAND 
+#define CONFIG_BOOT_MOVINAND 
+
+然后在顶层目录下执行命令：
+$make distclean
+$make smdk2416_config
+$make all
+$ rm /tftpboot/u-boot.bin 
+$ ./mkmovi 
+$ cp u-boot-movi.bin /tftpboot/ 
+
+2、编译 u-boot.bin 时，将#define  CONFIG_BOOT_MOVINAND注释掉，保留#define CONFIG_BOOT_NAND
+改为如下： 
+#define CONFIG_BOOT_NAND 
+//#define CONFIG_BOOT_MOVINAND 
+然后在顶层目录下执行命令：
+$make distclean
+$make smdk2416_config
+$make all
+$rm /tftpboot/u-boot.bin 
+$cp u-boot-movi.bin /tftpboot/ 
+
+3、从网络上更新u-boot
+# tftp c0000000 u-boot.bin; nand erase 0 40000; nand write c0000000 0 40000
+
+
+
+移植记录
+./samsung/smdk2416/smdk2416.c:  printf("^_^\n");
+
+./common/console.c:     puts ("^_^\n");
+./common/console.c:     puts ("^_^\n");
+./common/console.c:     puts ("^_^\n");
+./common/env_common.c:          puts ("^_^\n");
+./common/main.c:        printf("^_^\n");
+./common/cmd_nand.c:            printf ("^_^\n");
+./common/cmd_nand.c:                            printf ("^_^\n");
+
+配置寄存器为输出模式
+GPDCON_REG = 0x55555555;
+
+在寄存器中写0
+GPDDAT_REG = 0x0;  
+
+转接板上的指示灯用的是核心板上的21管脚LCD_B4，对应的CPU管脚为GPC15
+
+
+添加led命令
+1、在include/configs/smdk2416.h中添加 #define CONFIG_CMD_LED 一项
+2、在common目录下添加cmd_led.c文件
+3、修改common/Makefile文件添加一行 COBJS-y += cmd_led.o
+4、重新编译
+
+
+
+
+
+SD卡镜像位置：
+u-boot:3bfbce - 400.
+kernel:3bdbce - 2000.
+rootfs:3a1bce - 1c000.
+ofsinfo.bl1:3932142
+ofsinfo.last:3932158
+ofsinfo.env:3932110
